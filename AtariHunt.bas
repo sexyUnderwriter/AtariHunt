@@ -24,6 +24,7 @@
    dim _Master_Counter = h
    dim _Frame_Counter = i
    dim _Frame_Counter_dead = j
+   dim _flight_pattern = k
 
    ;```````````````````````````````````````````````````````````````
    ;  Makes better random numbers.
@@ -426,7 +427,8 @@ end
 
     _Bit0_Bird_Dead{0} = 0
     _Bit1_Bird_Falling{0} = 0
-    _wait_counter = 0  
+    _wait_counter = 0
+    _flight_pattern = rand & 3
  ;   score = 0
     player1x = 0  
     ;player1y = (rand&31) + (rand&15) + (rand&1) + 20
@@ -445,24 +447,33 @@ __clear_missile
     goto __exit_flight_sub
 
 __flying_bird
-
     _bird_counter = _bird_counter + 1
     if _bird_counter = 60 then _bird_counter = 0
-    
-  if _bird_counter > 30 then goto __flying_bird_2
+    on _flight_pattern goto __pattern0 __pattern1 __pattern2 __pattern3
 
-  _P1_L_R = _P1_L_R + .7
-  _P1_U_D = _P1_U_D -.2
+__pattern0 ; Straight flight
+    _P1_L_R = _P1_L_R + .7
+    _P1_U_D = _P1_U_D -.2
+    goto __exit_flight_sub
 
+__pattern1 ; Wavy flight
+    if _bird_counter < 30 then _P1_U_D = _P1_U_D - .5
+    if _bird_counter >= 30 then _P1_U_D = _P1_U_D + .5
+    _P1_L_R = _P1_L_R + .6
+    goto __exit_flight_sub
 
-   goto __exit_flight_sub
+__pattern2 ; Aggressive flight
+    if _P1_U_D < player0y then _P1_U_D = _P1_U_D + .3
+    if _P1_U_D > player0y then _P1_U_D = _P1_U_D - .3
+    _P1_L_R = _P1_L_R + .8
+    goto __exit_flight_sub
 
-__flying_bird_2
+__pattern3 ; Erratic flight
+    _P1_L_R = _P1_L_R + .7
+    if rand & 1 then _P1_U_D = _P1_U_D + .4
+    if !(rand & 1) then _P1_U_D = _P1_U_D - .4
+    goto __exit_flight_sub
 
-   _P1_L_R = _P1_L_R + .5 
-   _P1_U_D = _P1_U_D - .3
-
-   goto __exit_flight_sub
 
 __falling_bird
 
