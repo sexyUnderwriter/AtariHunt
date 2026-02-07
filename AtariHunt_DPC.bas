@@ -28,6 +28,7 @@
    dim _flight_pattern = k
    dim _dog_timer = l
    dim _dog_frame = m
+   dim _bird_dir = p
 
    ;```````````````````````````````````````````````````````````````
    ;  Makes better random numbers.
@@ -55,8 +56,8 @@
    ;  If your sprite is a different size, you`ll need to adjust
    ;  the numbers.
    ;
-   const _P_Edge_Top = 9
-   const _P_Edge_Bottom = 88
+   const _P_Edge_Top = 0
+   const _P_Edge_Bottom = 170
    const _P_Edge_Left = 1
    const _P_Edge_Right = 153
 
@@ -525,9 +526,9 @@ __Main_Loop
    _Bit1_FireB_Restrainer{1} = 1
 
 
-      ; the reason for the offset is to put the bullet in the middle of the bulls eye
-    missile0x = (player0x + 3)
-    missile0y = (player0y - 4)
+         ; center the bullet on the gunsight
+      missile0x = (player0x + 3)
+      missile0y = (player0y + 3)
     
 
     if collision(player1,missile0) then _Bit0_Bird_Dead{0} = 1 : goto __dead_bird
@@ -660,7 +661,8 @@ __Skip_Joy0_Right
    ;  Skips this section if hitting the edge.
    ;  
 
-   if _P1_L_R >= _P_Edge_Right then goto __Skip_Flight
+   if _P1_L_R > _P_Edge_Right then goto __Skip_Flight
+   if _P1_L_R < _P_Edge_Left then goto __Skip_Flight
 
    ;  Moves player0 right.
 
@@ -759,12 +761,13 @@ end
     _Bit0_Bird_Dead{0} = 0
     _Bit1_Bird_Falling{0} = 0
     _wait_counter = 0
-    _flight_pattern = rand & 3
+      _flight_pattern = rand & 3
+      _bird_dir = rand & 1
  ;   score = 0
-   player1x = 0
-   player1y = 90
-   _P1_L_R = 0.00
-   _P1_U_D = 90.00
+   if _bird_dir then player1x = _P_Edge_Left + 2 : _P1_L_R = _P_Edge_Left + 2
+   if !_bird_dir then player1x = _P_Edge_Right - 2 : _P1_L_R = _P_Edge_Right - 2
+    player1y = 90
+    _P1_U_D = 90.00
    ;***************************************************************
    ;
    ;  Displays the screen.
@@ -784,27 +787,27 @@ __flying_bird
     on _flight_pattern goto __pattern0 __pattern1 __pattern2 __pattern3
 
 __pattern0 ; Straight flight
-   if _bird_counter & 1 then _P1_L_R = _P1_L_R + 1
+   if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
    if _bird_counter & 3 = 0 then _P1_U_D = _P1_U_D - 1
    player1x = _P1_L_R : player1y = _P1_U_D
     goto __exit_flight_sub
 
 __pattern1 ; Wavy flight
-   if _bird_counter & 1 then _P1_L_R = _P1_L_R + 1
+   if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
    if _bird_counter < 30 && (_bird_counter & 1) then _P1_U_D = _P1_U_D - 1
    if _bird_counter >= 30 && (_bird_counter & 1) then _P1_U_D = _P1_U_D + 1
    player1x = _P1_L_R : player1y = _P1_U_D
     goto __exit_flight_sub
 
 __pattern2 ; Aggressive flight
-   _P1_L_R = _P1_L_R + 1
+   if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
    if _P1_U_D < player0y && (_bird_counter & 1) then _P1_U_D = _P1_U_D + 1
    if _P1_U_D > player0y && (_bird_counter & 1) then _P1_U_D = _P1_U_D - 1
    player1x = _P1_L_R : player1y = _P1_U_D
     goto __exit_flight_sub
 
 __pattern3 ; Erratic flight
-   if _bird_counter & 1 then _P1_L_R = _P1_L_R + 1
+   if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
    if rand & 1 then _P1_U_D = _P1_U_D + 1
    if !(rand & 1) then _P1_U_D = _P1_U_D - 1
    player1x = _P1_L_R : player1y = _P1_U_D
