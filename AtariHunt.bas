@@ -31,6 +31,12 @@
    ;
    dim rand16 = z
 
+   ;***************************************************************
+   ;
+   ;  Kernel options.
+   ;
+   set kernel_options pfcolors
+
 
 
    ;***************************************************************
@@ -104,14 +110,14 @@ __Start_Restart
    ;
    ;  Sets playfield color.
    ;
-   COLUPF = $CE
+   COLUPF = $3A
 
 
    ;***************************************************************
    ;
    ;  Sets background color.
    ;
-   COLUBK = $9C
+   COLUBK = $84
 
 
    ;***************************************************************
@@ -166,17 +172,31 @@ end
    ;  Sets up the playfield.
    ;
    playfield:
-   .............XX.................
-   ............XXXX................
-   ....XX.....XXXXXXX.........XX...
-   ...XXXX...XXXXXXXXXXXX....XXXX..
-   ..XXXXXX.XXXXXXXXXXXXXXX.XXXXXX.
-   .XXXXXXXX...............XXXXXXXX
-   XXXXXXXXXX.............XXXXXXXXX
-   XXXXXXXXXXX...........XXXXXXXXXX
-   .....................XXXXXXXXXXX
-   ....................XXXXXXXXXXXX
-   ...................XXXXXXXXXXXXX
+   ................................
+   ..XX............................
+   ..XX.XX..........................
+   X.XXX............................
+   .XXX............................
+   ..XX............................
+   ..XX............................
+   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+end
+
+   pfcolors:
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $36
+   $36
+   $36
 end
  
 
