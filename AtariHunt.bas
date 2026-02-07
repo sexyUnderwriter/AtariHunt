@@ -16,6 +16,7 @@
    dim _Bit1_FireB_Restrainer = c
    dim _Bit0_Bird_Dead = d
    dim _Bit1_Bird_Falling = d 
+   dim _Bit2_Dog_Show = d
 
     ; full variables
    dim _bird_counter = e
@@ -25,6 +26,8 @@
    dim _Frame_Counter = i
    dim _Frame_Counter_dead = j
    dim _flight_pattern = k
+   dim _dog_timer = l
+   dim _dog_frame = m
 
    ;```````````````````````````````````````````````````````````````
    ;  Makes better random numbers.
@@ -373,6 +376,11 @@ __Skip_Joy0_Left
 
 __Skip_Joy0_Right
 
+   ;***************************************************************
+   ;  Dog popup display after a hit.
+   ;
+   if _Bit2_Dog_Show{2} then goto __dog_show
+
    ;```````````````````````````````````````````````````````````````
    ;  Skips this section if hitting the edge.
    ;  
@@ -412,9 +420,34 @@ __end_flying
 
 __dead_bird
 
-   _Bit1_Bird_Falling{0} = 1 ; turn on falling bird
+   _Bit1_Bird_Falling{0} = 0
+   _Bit0_Bird_Dead{0} = 1
+   score = score + 1
+   _Bit2_Dog_Show{2} = 1
+   _dog_timer = 0
+   _dog_frame = 0
+   _P1_L_R = 76
+   _P1_U_D = 84
+   goto __exit_flight_sub
 
-     score = score + 1
+__dog_show
+
+   _dog_timer = _dog_timer + 1
+
+   if _dog_timer < 16 then _P1_U_D = 84 - _dog_timer
+   if _dog_timer >= 16 then _P1_U_D = 68
+
+   if _dog_timer = 8 then _dog_frame = 1
+   if _dog_timer = 16 then _dog_frame = 0
+   if _dog_timer = 24 then _dog_frame = 1
+   if _dog_timer = 32 then _dog_frame = 0
+   if _dog_timer = 40 then _dog_frame = 1
+   if _dog_timer = 48 then _dog_frame = 0
+
+   if _dog_timer >= 180 then _Bit2_Dog_Show{2} = 0 : goto __bird_spawn
+
+   if _dog_frame = 0 then goto __Dog_Frame0
+   if _dog_frame = 1 then goto __Dog_Frame1
 
    goto __exit_flight_sub
 
@@ -558,6 +591,48 @@ __Frame0
 
 end
     goto __end_flying
+
+__Dog_Frame0
+   player1:
+ %00000000
+ %00011000
+ %00111100
+ %01111110
+ %00111100
+ %00011000
+ %00011000
+ %00111100
+ %01111110
+ %01111110
+ %00111100
+ %00011000
+ %00011000
+ %00011000
+ %00000000
+ %00000000
+end
+   goto __exit_flight_sub
+
+__Dog_Frame1
+   player1:
+ %00000000
+ %00011000
+ %00111100
+ %01111110
+ %00111100
+ %00011000
+ %00011000
+ %00111100
+ %01111110
+ %01101110
+ %00111100
+ %00011000
+ %00011000
+ %00011000
+ %00000000
+ %00000000
+end
+   goto __exit_flight_sub
 
 __Frame2
  ;up wing
