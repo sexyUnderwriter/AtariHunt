@@ -119,7 +119,7 @@ __Start_Restart
    ;  Starting position of Player1.
    ;
    player1x = 0 : player1y = 90
-   _P1_L_R = 0.00 : _P1_U_D = 90.00
+   _P1_L_R = 0 : _P1_U_D = 90
 
    ;***************************************************************
    ;
@@ -259,12 +259,11 @@ end
    ......XX........................
    ......XX........................
    ......XX........................
-   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+   ......XX........................
+   ......XX........................
+   ......XX........................
+   ......XX........................
+   ......XX........................
    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -324,33 +323,6 @@ end
    $3A
    $3A
    $3A
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
    $3A
    $3A
    $3A
@@ -359,12 +331,31 @@ end
    $3A
    $3A
    $3A
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $3A
+   $2A
    $36
    $36
    $36
@@ -389,8 +380,6 @@ end
 end
 
    bkcolors:
-   $84
-   $84
    $84
    $84
    $84
@@ -697,14 +686,9 @@ __end_flying
 
 __dead_bird
 
-   _Bit1_Bird_Falling{0} = 0
+   _Bit1_Bird_Falling{0} = 1
    _Bit0_Bird_Dead{0} = 1
    score = score + 1
-   _Bit2_Dog_Show{2} = 1
-   _dog_timer = 0
-   _dog_frame = 0
-   _P1_L_R = 76
-   _P1_U_D = 84
    goto __exit_flight_sub
 
 __dog_show
@@ -735,7 +719,7 @@ __dog_show
 __Skip_Flight
 
    player1x = 200 : player1y = 200
-   _P1_L_R = 200.00 : _P1_U_D = 200.00
+   _P1_L_R = 200 : _P1_U_D = 200
    _wait_counter = _wait_counter + 1
    
       if _wait_counter = 60 then goto __bird_spawn
@@ -761,13 +745,13 @@ end
     _Bit0_Bird_Dead{0} = 0
     _Bit1_Bird_Falling{0} = 0
     _wait_counter = 0
-      _flight_pattern = rand & 3
-      _bird_dir = rand & 1
+    _flight_pattern = rand & 3
+    _bird_dir = rand & 1
  ;   score = 0
    if _bird_dir then player1x = _P_Edge_Left + 2 : _P1_L_R = _P_Edge_Left + 2
    if !_bird_dir then player1x = _P_Edge_Right - 2 : _P1_L_R = _P_Edge_Right - 2
     player1y = 90
-    _P1_U_D = 90.00
+   _P1_U_D = 90
    ;***************************************************************
    ;
    ;  Displays the screen.
@@ -816,9 +800,10 @@ __pattern3 ; Erratic flight
 
 __falling_bird
 
+   _bird_counter = _bird_counter + 1
    if _bird_counter & 1 then _P1_U_D = _P1_U_D + 1
    player1x = _P1_L_R : player1y = _P1_U_D
-   if _P1_U_D >= 70 then goto __Skip_Flight
+   if _P1_U_D >= 140 then _Bit1_Bird_Falling{0} = 0 : _Bit2_Dog_Show{2} = 1 : _dog_timer = 0 : _dog_frame = 0 : _P1_L_R = 76 : _P1_U_D = 84 : player1x = _P1_L_R : player1y = _P1_U_D : goto __exit_flight_sub
    
    goto __exit_flight_sub
 
