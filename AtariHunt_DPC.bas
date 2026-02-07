@@ -3,8 +3,8 @@
    ;  Player0 fixed point variables for more flexibility in
    ;  gameplay mechanics.
    ;
-   dim _P1_L_R = player1x.a
-   dim _P1_U_D = player1y.b
+   dim _P1_L_R = n
+   dim _P1_U_D = o
    dim _P0_L_R = player0x.a
    dim _P0_U_D = player0y.b
 
@@ -118,6 +118,7 @@ __Start_Restart
    ;  Starting position of Player1.
    ;
    player1x = 0 : player1y = 90
+   _P1_L_R = 0.00 : _P1_U_D = 90.00
 
    ;***************************************************************
    ;
@@ -711,6 +712,8 @@ __dog_show
    if _dog_timer < 16 then _P1_U_D = 84 - _dog_timer
    if _dog_timer >= 16 then _P1_U_D = 68
 
+   player1x = _P1_L_R : player1y = _P1_U_D
+
    if _dog_timer = 8 then _dog_frame = 1
    if _dog_timer = 16 then _dog_frame = 0
    if _dog_timer = 24 then _dog_frame = 1
@@ -730,6 +733,7 @@ __dog_show
 __Skip_Flight
 
    player1x = 200 : player1y = 200
+   _P1_L_R = 200.00 : _P1_U_D = 200.00
    _wait_counter = _wait_counter + 1
    
       if _wait_counter = 60 then goto __bird_spawn
@@ -780,32 +784,37 @@ __flying_bird
     on _flight_pattern goto __pattern0 __pattern1 __pattern2 __pattern3
 
 __pattern0 ; Straight flight
-    _P1_L_R = _P1_L_R + .7
-    _P1_U_D = _P1_U_D -.2
+   if _bird_counter & 1 then _P1_L_R = _P1_L_R + 1
+   if _bird_counter & 3 = 0 then _P1_U_D = _P1_U_D - 1
+   player1x = _P1_L_R : player1y = _P1_U_D
     goto __exit_flight_sub
 
 __pattern1 ; Wavy flight
-    if _bird_counter < 30 then _P1_U_D = _P1_U_D - .5
-    if _bird_counter >= 30 then _P1_U_D = _P1_U_D + .5
-    _P1_L_R = _P1_L_R + .6
+   if _bird_counter & 1 then _P1_L_R = _P1_L_R + 1
+   if _bird_counter < 30 && (_bird_counter & 1) then _P1_U_D = _P1_U_D - 1
+   if _bird_counter >= 30 && (_bird_counter & 1) then _P1_U_D = _P1_U_D + 1
+   player1x = _P1_L_R : player1y = _P1_U_D
     goto __exit_flight_sub
 
 __pattern2 ; Aggressive flight
-    if _P1_U_D < player0y then _P1_U_D = _P1_U_D + .3
-    if _P1_U_D > player0y then _P1_U_D = _P1_U_D - .3
-    _P1_L_R = _P1_L_R + .8
+   _P1_L_R = _P1_L_R + 1
+   if _P1_U_D < player0y && (_bird_counter & 1) then _P1_U_D = _P1_U_D + 1
+   if _P1_U_D > player0y && (_bird_counter & 1) then _P1_U_D = _P1_U_D - 1
+   player1x = _P1_L_R : player1y = _P1_U_D
     goto __exit_flight_sub
 
 __pattern3 ; Erratic flight
-    _P1_L_R = _P1_L_R + .7
-    if rand & 1 then _P1_U_D = _P1_U_D + .4
-    if !(rand & 1) then _P1_U_D = _P1_U_D - .4
+   if _bird_counter & 1 then _P1_L_R = _P1_L_R + 1
+   if rand & 1 then _P1_U_D = _P1_U_D + 1
+   if !(rand & 1) then _P1_U_D = _P1_U_D - 1
+   player1x = _P1_L_R : player1y = _P1_U_D
     goto __exit_flight_sub
 
 
 __falling_bird
 
-   _P1_U_D = _P1_U_D + .6
+   if _bird_counter & 1 then _P1_U_D = _P1_U_D + 1
+   player1x = _P1_L_R : player1y = _P1_U_D
    if _P1_U_D >= 70 then goto __Skip_Flight
    
    goto __exit_flight_sub
