@@ -264,6 +264,7 @@ end
    ......XX........................
    ......XX........................
    ......XX........................
+   ......XX........................
    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -354,34 +355,31 @@ end
    $3A
    $3A
    $3A
-   $3A
+   $2A
+   $2A
+   $2A
+   $2A
    $2A
    $36
    $36
    $36
    $36
    $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
-   $36
+   $34
+   $34
+   $34
+   $34
+   $32
+   $32
+   $32
+   $32
+   $30
+   $30
+   $30
+   $30
 end
 
    bkcolors:
-   $84
-   $84
    $84
    $84
    $84
@@ -486,7 +484,7 @@ __Main_Loop
    ;  Sets color of player0 sprite. (the gun sight)
    ;
    COLUP0 = 0
-   COLUP1 = $B4
+   COLUP1 = $00
 
    ; Sets the width of missle
 
@@ -521,6 +519,16 @@ __Main_Loop
     
 
     if collision(player1,missile0) then _Bit0_Bird_Dead{0} = 1 : goto __dead_bird
+
+      if _Bit0_Bird_Dead{0} then goto __Skip_Hitbox
+      if player1x < missile0x - 4 then goto __Skip_Hitbox
+      if player1x > missile0x + 4 then goto __Skip_Hitbox
+      if player1y < missile0y - 4 then goto __Skip_Hitbox
+      if player1y > missile0y + 4 then goto __Skip_Hitbox
+
+      _Bit0_Bird_Dead{0} = 1 : goto __dead_bird
+
+__Skip_Hitbox
 
    _Bit1_FireB_Restrainer{1} = 0
  
@@ -688,6 +696,9 @@ __dead_bird
 
    _Bit1_Bird_Falling{0} = 1
    _Bit0_Bird_Dead{0} = 1
+   _Bit2_Dog_Show{2} = 0
+   _dog_timer = 0
+   _Frame_Counter = 0
    score = score + 1
    goto __exit_flight_sub
 
@@ -744,14 +755,15 @@ end
 
     _Bit0_Bird_Dead{0} = 0
     _Bit1_Bird_Falling{0} = 0
+   _Bit2_Dog_Show{2} = 0
     _wait_counter = 0
     _flight_pattern = rand & 3
     _bird_dir = rand & 1
  ;   score = 0
-   if _bird_dir then player1x = _P_Edge_Left + 2 : _P1_L_R = _P_Edge_Left + 2
-   if !_bird_dir then player1x = _P_Edge_Right - 2 : _P1_L_R = _P_Edge_Right - 2
+    if _bird_dir then player1x = _P_Edge_Left + 2 : _P1_L_R = _P_Edge_Left + 2
+    if !_bird_dir then player1x = _P_Edge_Right - 2 : _P1_L_R = _P_Edge_Right - 2
     player1y = 90
-   _P1_U_D = 90
+    _P1_U_D = 90
    ;***************************************************************
    ;
    ;  Displays the screen.
@@ -803,7 +815,7 @@ __falling_bird
    _bird_counter = _bird_counter + 1
    if _bird_counter & 1 then _P1_U_D = _P1_U_D + 1
    player1x = _P1_L_R : player1y = _P1_U_D
-   if _P1_U_D >= 140 then _Bit1_Bird_Falling{0} = 0 : _Bit2_Dog_Show{2} = 1 : _dog_timer = 0 : _dog_frame = 0 : _P1_L_R = 76 : _P1_U_D = 84 : player1x = _P1_L_R : player1y = _P1_U_D : goto __exit_flight_sub
+   if _P1_U_D >= 160 then _Bit1_Bird_Falling{0} = 0 : _Bit2_Dog_Show{2} = 1 : _dog_timer = 0 : _dog_frame = 0 : _P1_L_R = 76 : _P1_U_D = 84 : player1x = _P1_L_R : player1y = _P1_U_D : goto __exit_flight_sub
    
    goto __exit_flight_sub
 
