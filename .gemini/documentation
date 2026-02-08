@@ -1,0 +1,29 @@
+# Gemini Code Assist Style Guide - Atari 2600 (DPC+)
+
+This project targets the Atari 2600 console using the **DPC+** (Enhanced Display Processor Chip) scheme. All code suggestions must adhere to the strict hardware constraints of the MOS 6502 CPU and the TIA (Television Interface Adaptor), while leveraging the DPC+ ARM coprocessor features.
+
+## 1. Architecture & Constraints
+*   **CPU**: MOS 6507 (6502 variant) running at 1.19 MHz.
+*   **RAM**: 128 bytes (RIOT) + DPC+ ARM RAM (accessible via fetchers).
+*   **Timing**: Code inside the kernel (visible screen) must be cycle-exact.
+    *   76 machine cycles per scanline.
+    *   W-Sync (Wait for Sync) should be used sparingly to avoid wasting cycles in complex kernels.
+
+## 2. DPC+ Specific Features
+When suggesting improvements or code, prioritize DPC+ capabilities over standard kernel techniques:
+*   **Fast Fetch Mode**: Use DPC+ data fetchers for sprite and playfield data to bypass the 6502's slow immediate loading.
+*   **ARM Offloading**: Move complex logic (collision detection, random number generation, AI state machines) to the ARM C code or ARM assembly driver to free up 6502 cycles.
+*   **3-Voice Music**: Utilize the DPC+ custom waveform oscillators instead of standard TIA 2-channel sound where possible.
+
+## 3. Coding Standards
+*   **Language**: 6502 Assembly (dasm/ca65 syntax) or batari Basic (DPC+ Kernel).
+*   **Labels**: Use descriptive labels for branches (e.g., `.skip_draw_p0` instead of `.skip1`).
+*   **Optimization**:
+    *   Prefer `BIT` instructions to skip 2-byte instructions without affecting flags (other than N/V).
+    *   Use Zero Page addressing whenever possible for speed.
+    *   Unroll loops inside the display kernel; do not use branching logic inside the active draw loop unless cycle-counted.
+
+## 4. Common Pitfalls to Avoid
+*   Do not suggest floating-point math; the 6502 does not support it. Use fixed-point math (8.8 or 16.16) handled by the ARM processor if needed.
+*   Ensure all bankswitching calls (jumping between 4K banks) handle the program counter correctly.
+*   Remember that DPC+ fetchers must be pointed to data streams before the kernel starts.
