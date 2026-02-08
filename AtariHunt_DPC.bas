@@ -695,14 +695,9 @@ end
    _D4
    _F8
    _F8
-   _FE
-   _FE
-   _FE
-   _FE
-   _FE
-   _FE
-   _FE
-   _FE
+   _F2
+   _F2
+   _F8
 end
  
 
@@ -1145,15 +1140,15 @@ __exit_flight_sub
 
    ;***************************************************************
    ;
-   ;  88 rows that are 2 scanlines high.
+   ;  176 rows that are 1 scanline high. (88 rows of color).
    ;
    DF6FRACINC = 255 ; Background colors.
    DF4FRACINC = 255 ; Playfield colors.
 
-   DF0FRACINC = 128 ; Column 0.
-   DF1FRACINC = 128 ; Column 1.
-   DF2FRACINC = 128 ; Column 2.
-   DF3FRACINC = 128 ; Column 3.
+   DF0FRACINC = 255 ; Column 0.
+   DF1FRACINC = 255 ; Column 1.
+   DF2FRACINC = 255 ; Column 2.
+   DF3FRACINC = 255 ; Column 3.
 
    drawscreen
 
