@@ -695,9 +695,14 @@ end
    _D4
    _F8
    _F8
-   _F2
-   _F2
-   _F8
+   _FE
+   _FE
+   _FE
+   _FE
+   _FE
+   _FE
+   _FE
+   _FE
 end
  
 
@@ -713,6 +718,8 @@ end
    ;
    ;
 __Main_Loop
+
+   scorecolor = _F8
 
    ;***************************************************************
    ;
@@ -1021,6 +1028,8 @@ __clear_missile
     goto __exit_flight_sub
 
 __Splash_Screen
+
+   scorecolor = _F8
 
    ; Blue background, white logo and indicator.
    COLUBK = $8C
