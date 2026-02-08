@@ -1,0 +1,57 @@
+ player1:
+    %00111100 ; Top of head
+    %01111110
+    %11011011 ; Eyes
+    %11111111
+    %10000001 ; Snout top
+    %01111110 ; Nose area
+    %01000010 ; Open mouth top
+    %01011010 ; Tongue detail
+    %01011010
+    %00111100 ; Jaw
+    %00011000 ; Neck
+    %00111100 ; Collar
+    %01111110 ; Shoulders
+    %11111111 ; Chest
+    %11111111
+    %11111111
+    %11111111
+    %01111110
+    %01111110
+    %01100110 ; Legs start
+    %01100110
+    %01100110
+    %01100110
+    %01100110
+    %11100111 ; Paws
+    %11100111
+end
+
+    player1color:
+    $34 ; Brown
+    $34
+    $0E ; White (Eyes)
+    $34
+    $32 ; Darker brown
+    $0E ; White (Snout)
+    $00 ; Black (Mouth)
+    $44 ; Red (Tongue)
+    $44
+    $0E ; White
+    $34 ; Brown
+    $84 ; Blue (Collar)
+    $34 ; Brown... (repeat for body)
+    $34
+    $34
+    $34
+    $34
+    $34
+    $34
+    $34
+    $34
+    $34
+    $34
+    $34
+    $0E ; White (Paws)
+    $0E
+end
