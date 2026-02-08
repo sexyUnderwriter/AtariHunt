@@ -14,6 +14,7 @@
   
    dim _Bit0_Reset_Restrainer = c
    dim _Bit1_FireB_Restrainer = c
+   dim _Splash_Active = q
    dim _Bit0_Bird_Dead = d
    dim _Bit1_Bird_Falling = d 
    dim _Bit2_Dog_Show = d
@@ -29,11 +30,13 @@
    dim _dog_timer = l
    dim _dog_frame = m
    dim _bird_dir = p
+   dim _Splash_Blink = var0
 
    ;```````````````````````````````````````````````````````````````
    ;  Makes better random numbers.
    ;
    dim rand16 = z
+   dim _Bit7_Splash_Seen = rand16
 
    ;***************************************************************
    ;
@@ -79,6 +82,7 @@
    ;  PROGRAM START/RESTART
    ;
    ;
+   _Bit7_Splash_Seen{7} = 0
    goto __Bank_2 bank2
 
 
@@ -112,6 +116,9 @@ __Start_Restart
    s = 0 : t = 0 : u = 0 : v = 0 : w = 0 : x = 0 : y = 0
    var0 = 0 : var1 = 0 : var2 = 0 : var3 = 0 : var4 = 0
    var5 = 0 : var6 = 0 : var7 = 0 : var8 = 0
+
+   _Splash_Active = 1
+   if _Bit7_Splash_Seen{7} then _Splash_Active = 0
 
 
    ;***************************************************************
@@ -492,6 +499,12 @@ __Main_Loop
 
    ;***************************************************************
    ;
+   ;  Splash screen.
+   ;
+   if _Splash_Active then goto __Splash_Screen
+
+   ;***************************************************************
+   ;
    ;  Fire button check.
    ;
    ;```````````````````````````````````````````````````````````````
@@ -776,6 +789,79 @@ __clear_missile
    _bulletcounter = 0
     missile0x = 160 : missile0y = 200
     goto __exit_flight_sub
+
+__Splash_Screen
+
+   ; Blue background, white logo and indicator.
+   COLUBK = $8C
+   COLUP0 = $0E
+   COLUP1 = $0E
+   COLUPF = $0E
+
+   player0x = 68 : player0y = 60
+   player1x = 92 : player1y = 60
+   missile0height = 4
+
+   _Splash_Blink = _Splash_Blink + 1
+   if _Splash_Blink & 16 then missile0x = 80 : missile0y = 116 else missile0x = 200 : missile0y = 200
+
+__Splash_Gfx
+   player0:
+   %00111000
+   %01101100
+   %11000110
+   %11000110
+   %11111110
+   %11000110
+   %11000110
+   %00000000
+end
+
+   player1:
+   %11000110
+   %11000110
+   %11000110
+   %11111110
+   %11000110
+   %11000110
+   %11000110
+   %00000000
+end
+
+   drawscreen
+
+   if joy0fire then _Bit7_Splash_Seen{7} = 1 : _Bit1_FireB_Restrainer{1} = 1 : _Splash_Active = 0 : goto __Restore_Sprites
+
+   goto __Splash_Screen
+
+__Restore_Sprites
+
+   player0:
+   %00011000
+   %00011000
+   %00100100
+   %11000011
+   %11000011
+   %00100100
+   %00011000
+   %00011000
+end
+
+   player1:
+   %00000000
+   %00000000
+   %00111000
+   %01111100
+   %11111111
+   %00111010
+   %00011000
+   %00011000
+   %00001000
+   %00000000
+   %00000000
+end
+
+   goto __Start_Restart
 
 __flying_bird
     _bird_counter = _bird_counter + 1
