@@ -792,11 +792,19 @@ __Main_Loop
 
 __Skip_Hitbox
 
+   _bulletcounter = 2
+
    _Bit1_FireB_Restrainer{1} = 0
  
 
 
 __Skip_Joy0_Fire
+
+   if _bulletcounter > 0 then _bulletcounter = _bulletcounter - 1 : goto __Skip_Clear_Shot
+
+   missile0x = 160 : missile0y = 200
+
+__Skip_Clear_Shot
   
    ;***************************************************************
    ;
@@ -963,6 +971,8 @@ __dead_bird
    _Bit2_Dog_Show{2} = 0
    _dog_timer = 0
    _Frame_Counter = 0
+   _P0_U_D = _P_Edge_Bottom
+   player0y = _P0_U_D
    score = score + 1
    goto __exit_flight_sub
 
@@ -973,7 +983,6 @@ __dog_show
    if _dog_timer < 16 then _P1_U_D = 84 - _dog_timer
    if _dog_timer >= 16 then _P1_U_D = 68
 
-   player0x = _P1_L_R : player0y = _P1_U_D
    player1x = _P1_L_R : player1y = _P1_U_D
 
    if _dog_timer >= 180 then _Bit2_Dog_Show{2} = 0 : player0height = 8 : player0:
