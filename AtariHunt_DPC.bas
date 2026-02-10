@@ -774,6 +774,8 @@ __Main_Loop
    ;
    _Bit1_FireB_Restrainer{1} = 1
 
+   AUDC0 = 8 : AUDF0 = 10 : AUDV0 = 8
+
 
          ; center the bullet on the gunsight
       missile0x = (player0x + 3)
@@ -800,11 +802,10 @@ __Skip_Hitbox
 
 __Skip_Joy0_Fire
 
-   if _bulletcounter > 0 then _bulletcounter = _bulletcounter - 1 : goto __Skip_Clear_Shot
 
-   missile0x = 160 : missile0y = 200
+   if _bulletcounter > 0 then _bulletcounter = _bulletcounter - 1
 
-__Skip_Clear_Shot
+   if _bulletcounter = 0 then missile0x = 160 : missile0y = 200
   
    ;***************************************************************
    ;
@@ -985,7 +986,7 @@ __dog_show
 
    player1x = _P1_L_R : player1y = _P1_U_D
 
-   if _dog_timer >= 180 then _Bit2_Dog_Show{2} = 0 : player0height = 8 : player0:
+   if _dog_timer >= 180 then _Bit2_Dog_Show{2} = 0 : _bulletcounter = 0 : missile0x = 160 : missile0y = 200 : AUDV0 = 0 : player0height = 8 : player0:
    %00011000
    %00011000
    %00100100
