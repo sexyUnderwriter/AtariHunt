@@ -775,7 +775,7 @@ __Main_Loop
    if _Splash_Active then goto __Splash_Screen
 
    if _Game_Over then goto __Game_Over
-   if _Shots_Remaining = 0 then goto __Round_End_Check
+   if _Shots_Remaining = 0 && !_Bit0_Bird_Dead{0} && !_Bit1_Bird_Falling{0} && !_Bit2_Dog_Show{2} then goto __Round_End_Check
 
    if _Just_Started then goto __Just_Started_Check
 
@@ -1502,40 +1502,16 @@ end
 
 __Dog_Frame0
    player0height = 8
-   player1height = 32
+   player1height = 8
    player1:
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00100010
- %00100010
- %00100010
- %00101010
- %00011100
- %00001000
- %00010100
- %00011100
- %00001001
- %11111011
- %11111101
- %11111111
- %11111001
- %01110001
- %10010001
- %10010011
+ %11100000
+ %10000000
+ %11100000
  %10010000
+ %10110000
+ %11100000
  %10010000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
+ %11100000
 end
    player1color:
    $8C
@@ -1546,30 +1522,6 @@ end
    $8C
    $00
    $00
-   $00
-   $14
-   $14
-   $04
-   $14
-   $14
-   $22
-   $32
-   $12
-   $20
-   $20
-   $14
-   $14
-   $16
-   $14
-   $14
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
 end
    goto __exit_flight_sub
 
