@@ -760,7 +760,7 @@ __Main_Loop
    ;  Turns off restrainer bit and skips this section if button is
    ;  not pressed.
    ;
-   if !joy0fire then _Bit1_FireB_Restrainer{1} = 0 : goto __Skip_Joy0_Fire
+   if !joy0fire then AUDV0 = 0 : _Bit1_FireB_Restrainer{1} = 0 : goto __Skip_Joy0_Fire
 
    ;```````````````````````````````````````````````````````````````
    ;  Skips this section if button hasn't been released after
