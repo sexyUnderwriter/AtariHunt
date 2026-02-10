@@ -38,6 +38,10 @@
    dim _Game_Over = var5
    dim _Just_Started = var6
    dim _Accuracy = var7
+   dim _Splash_P1_L_R = s
+   dim _Splash_P1_U_D = t
+   dim _Splash_P1_Pattern = u
+   dim _Splash_P1_Dir = v
 
    ;```````````````````````````````````````````````````````````````
    ;  Makes better random numbers.
@@ -1173,35 +1177,142 @@ __Splash_Screen
    COLUP1 = $0E
    COLUPF = $0E
 
-   player0x = 68 : player0y = 60
-   player1x = 92 : player1y = 60
    missile0height = 4
+   player1height = 16
+   player0height = 16
+   missile0x = 200 : missile0y = 200
 
    _Splash_Blink = _Splash_Blink + 1
-   if _Splash_Blink & 16 then missile0x = 80 : missile0y = 116 else missile0x = 200 : missile0y = 200
+   if _Splash_Blink = 1 then _flight_pattern = rand & 3
+   if _Splash_Blink = 1 then _bird_dir = rand & 1
+   if _Splash_Blink = 1 then _P1_L_R = _P_Edge_Left + 10
+   if _Splash_Blink = 1 then _P1_U_D = 50
+   if _Splash_Blink = 1 then _Splash_P1_Pattern = rand & 1
+   if _Splash_Blink = 1 then _Splash_P1_Dir = rand & 1
+   if _Splash_Blink = 1 then _Splash_P1_L_R = _P_Edge_Right - 10
+   if _Splash_Blink = 1 then _Splash_P1_U_D = 70
+
+   _Master_Counter = _Master_Counter + 1
+   if _Master_Counter < 4 then goto __Splash_Skip_Move
+   _Frame_Counter = _Frame_Counter + 1 : _Master_Counter = 0
+   if _Frame_Counter = 4 then _Frame_Counter = 0
+
+   _bird_counter = _bird_counter + 1
+   if _bird_counter = 60 then _bird_counter = 0
+
+   if _flight_pattern = 0 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 0 then if _Frame_Counter = 0 then _P1_U_D = _P1_U_D - 1
+
+   if _flight_pattern = 1 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 1 then if _bird_counter < 30 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D - 1
+   if _flight_pattern = 1 then if _bird_counter >= 30 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D + 1
+
+   if _flight_pattern = 2 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 2 then if _P1_U_D < 70 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D + 1
+   if _flight_pattern = 2 then if _P1_U_D > 40 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D - 1
+
+   if _flight_pattern = 3 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 3 then if rand & 1 then _P1_U_D = _P1_U_D + 1
+   if _flight_pattern = 3 then if !(rand & 1) then _P1_U_D = _P1_U_D - 1
+
+   if _Splash_P1_Dir then _Splash_P1_L_R = _Splash_P1_L_R + 1 else _Splash_P1_L_R = _Splash_P1_L_R - 1
+   if _Splash_P1_Pattern then if _Frame_Counter = 0 then _Splash_P1_U_D = _Splash_P1_U_D + 1
+
+
+__Splash_Skip_Move
+
+   if _P1_L_R > _P_Edge_Right then _bird_dir = 0 : _flight_pattern = rand & 3 : _bird_counter = 0
+   if _P1_L_R < _P_Edge_Left then _bird_dir = 1 : _flight_pattern = rand & 3 : _bird_counter = 0
+   if _Splash_P1_L_R > _P_Edge_Right then _Splash_P1_Dir = 0
+   if _Splash_P1_L_R < _P_Edge_Left then _Splash_P1_Dir = 1
+
+   player1x = _P1_L_R
+   player1y = _P1_U_D
+
+   player0x = _Splash_P1_L_R
+   player0y = _Splash_P1_U_D
 
 __Splash_Gfx
+   if _Splash_Blink & 8 then goto __Splash_Bird_Frame2
+
+__Splash_Bird_Frame1
+   player1:
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00111000
+ %01111100
+ %11111111
+ %00000110
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+end
    player0:
-   %00111000
-   %01101100
-   %11000110
-   %11000110
-   %11111110
-   %11000110
-   %11000110
-   %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00111000
+ %01111100
+ %11111111
+ %00000110
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+end
+   goto __Splash_Draw
+
+__Splash_Bird_Frame2
+   player1:
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00111000
+ %01111100
+ %11111111
+ %00111010
+ %00011000
+ %00011000
+ %00001000
+ %00000000
+ %00000000
+end
+   player0:
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00111000
+ %01111100
+ %11111111
+ %00111010
+ %00011000
+ %00011000
+ %00001000
+ %00000000
+ %00000000
 end
 
-   player1:
-   %11000110
-   %11000110
-   %11000110
-   %11111110
-   %11000110
-   %11000110
-   %11000110
-   %00000000
-end
+__Splash_Draw
 
    drawscreen
 
