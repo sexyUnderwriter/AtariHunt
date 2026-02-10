@@ -1105,8 +1105,17 @@ __clear_missile
 
 __Round_End_Check
 
-   _Accuracy = _Round_Hits * 10
-   score = _Accuracy
+   score = 0
+   if _Round_Hits = 1 then score = 10
+   if _Round_Hits = 2 then score = 20
+   if _Round_Hits = 3 then score = 30
+   if _Round_Hits = 4 then score = 40
+   if _Round_Hits = 5 then score = 50
+   if _Round_Hits = 6 then score = 60
+   if _Round_Hits = 7 then score = 70
+   if _Round_Hits = 8 then score = 80
+   if _Round_Hits = 9 then score = 90
+   if _Round_Hits = 10 then score = 100
    AUDV0 = 0 : AUDV1 = 0
 
    drawscreen
