@@ -31,6 +31,17 @@
    dim _dog_frame = m
    dim _bird_dir = p
    dim _Splash_Blink = var0
+   dim _Round = var1
+   dim _Shots_Remaining = var2
+   dim _Shots_Fired = r
+   dim _Round_Hits = var4
+   dim _Game_Over = var5
+   dim _Just_Started = var6
+   dim _Accuracy = var7
+   dim _Splash_P1_L_R = s
+   dim _Splash_P1_U_D = t
+   dim _Splash_P1_Pattern = u
+   dim _Splash_P1_Dir = v
 
    ;```````````````````````````````````````````````````````````````
    ;  Makes better random numbers.
@@ -203,6 +214,9 @@
    const _P_Edge_Bottom = 170
    const _P_Edge_Left = 1
    const _P_Edge_Right = 153
+   const _Shots_Per_Round = 10
+   const _Min_Hits_To_Pass = 7
+   const _Ammo_Row = 170
 
 
 
@@ -256,6 +270,14 @@ __Start_Restart
    s = 0 : t = 0 : u = 0 : v = 0 : w = 0 : x = 0 : y = 0
    var0 = 0 : var1 = 0 : var2 = 0 : var3 = 0 : var4 = 0
    var5 = 0 : var6 = 0 : var7 = 0 : var8 = 0
+
+   _Round = 1
+   _Shots_Remaining = _Shots_Per_Round
+   _Shots_Fired = 0
+   _Round_Hits = 0
+   _Game_Over = 0
+   _Just_Started = 1
+   score = 0
 
    _Splash_Active = 1
    if _Bit7_Splash_Seen{7} then _Splash_Active = 0
@@ -752,6 +774,13 @@ __Main_Loop
    ;
    if _Splash_Active then goto __Splash_Screen
 
+   if _Game_Over then goto __Game_Over
+   if _Shots_Remaining = 0 && !_Bit0_Bird_Dead{0} && !_Bit1_Bird_Falling{0} && !_Bit2_Dog_Show{2} then goto __Round_End_Check
+
+   if _Just_Started then goto __Just_Started_Check
+
+__Fire_Button_Check
+
    ;***************************************************************
    ;
    ;  Fire button check.
@@ -760,7 +789,7 @@ __Main_Loop
    ;  Turns off restrainer bit and skips this section if button is
    ;  not pressed.
    ;
-   if !joy0fire then _Bit1_FireB_Restrainer{1} = 0 : goto __Skip_Joy0_Fire
+   if !joy0fire then AUDV0 = 0 : _Bit1_FireB_Restrainer{1} = 0 : goto __Skip_Joy0_Fire
 
    ;```````````````````````````````````````````````````````````````
    ;  Skips this section if button hasn't been released after
@@ -773,6 +802,10 @@ __Main_Loop
    ;  bird restrainer.
    ;
    _Bit1_FireB_Restrainer{1} = 1
+
+   if _Shots_Remaining = 0 then goto __Skip_Joy0_Fire
+   _Shots_Remaining = _Shots_Remaining - 1
+   _Shots_Fired = _Shots_Fired + 1
 
    AUDC0 = 8 : AUDF0 = 10 : AUDV0 = 8
 
@@ -795,8 +828,6 @@ __Main_Loop
 __Skip_Hitbox
 
    _bulletcounter = 2
-
-   _Bit1_FireB_Restrainer{1} = 0
  
 
 
@@ -806,6 +837,16 @@ __Skip_Joy0_Fire
    if _bulletcounter > 0 then _bulletcounter = _bulletcounter - 1
 
    if _bulletcounter = 0 then missile0x = 160 : missile0y = 200
+
+   goto __After_Fire_Check
+
+__Just_Started_Check
+
+   if joy0fire then _Bit1_FireB_Restrainer{1} = 1 : goto __Skip_Joy0_Fire
+   _Just_Started = 0
+   goto __Fire_Button_Check
+
+__After_Fire_Check
   
    ;***************************************************************
    ;
@@ -974,6 +1015,7 @@ __dead_bird
    _Frame_Counter = 0
    _P0_U_D = _P_Edge_Bottom
    player0y = _P0_U_D
+   _Round_Hits = _Round_Hits + 1
    score = score + 1
    goto __exit_flight_sub
 
@@ -1065,9 +1107,69 @@ __clear_missile
     missile0x = 160 : missile0y = 200
     goto __exit_flight_sub
 
+__Round_End_Check
+
+   score = 0
+   if _Round_Hits = 1 then score = 10
+   if _Round_Hits = 2 then score = 20
+   if _Round_Hits = 3 then score = 30
+   if _Round_Hits = 4 then score = 40
+   if _Round_Hits = 5 then score = 50
+   if _Round_Hits = 6 then score = 60
+   if _Round_Hits = 7 then score = 70
+   if _Round_Hits = 8 then score = 80
+   if _Round_Hits = 9 then score = 90
+   if _Round_Hits = 10 then score = 100
+   AUDV0 = 0 : AUDV1 = 0
+
+   drawscreen
+
+   if !joy0fire then _Bit1_FireB_Restrainer{1} = 0 : goto __Round_End_Check
+   if _Bit1_FireB_Restrainer{1} then goto __Round_End_Check
+   _Bit1_FireB_Restrainer{1} = 1
+
+   if _Round_Hits < _Min_Hits_To_Pass then _Game_Over = 1 : goto __Game_Over
+
+   goto __Next_Round
+
+__Next_Round
+
+   _Round = _Round + 1
+   _Shots_Remaining = _Shots_Per_Round
+   _Shots_Fired = 0
+   _Round_Hits = 0
+   score = 0
+   goto __bird_spawn
+
+__Game_Over
+
+   AUDV0 = 0 : AUDV1 = 0
+   COLUBK = $46
+   COLUPF = $0E
+   player0x = 200 : player0y = 200
+   player1x = 200 : player1y = 200
+   missile0x = 200 : missile0y = 200
+
+   pfpixel 4 _Ammo_Row off
+   pfpixel 6 _Ammo_Row off
+   pfpixel 8 _Ammo_Row off
+   pfpixel 10 _Ammo_Row off
+   pfpixel 12 _Ammo_Row off
+   pfpixel 14 _Ammo_Row off
+   pfpixel 16 _Ammo_Row off
+   pfpixel 18 _Ammo_Row off
+   pfpixel 20 _Ammo_Row off
+   pfpixel 22 _Ammo_Row off
+
+   drawscreen
+
+   if !switchreset then goto __Game_Over
+   goto __Start_Restart
+
 __Splash_Screen
 
    scorecolor = _F8
+   score = 0
 
    ; Blue background, white logo and indicator.
    COLUBK = $8C
@@ -1075,35 +1177,142 @@ __Splash_Screen
    COLUP1 = $0E
    COLUPF = $0E
 
-   player0x = 68 : player0y = 60
-   player1x = 92 : player1y = 60
    missile0height = 4
+   player1height = 16
+   player0height = 16
+   missile0x = 200 : missile0y = 200
 
    _Splash_Blink = _Splash_Blink + 1
-   if _Splash_Blink & 16 then missile0x = 80 : missile0y = 116 else missile0x = 200 : missile0y = 200
+   if _Splash_Blink = 1 then _flight_pattern = rand & 3
+   if _Splash_Blink = 1 then _bird_dir = rand & 1
+   if _Splash_Blink = 1 then _P1_L_R = _P_Edge_Left + 10
+   if _Splash_Blink = 1 then _P1_U_D = 50
+   if _Splash_Blink = 1 then _Splash_P1_Pattern = rand & 1
+   if _Splash_Blink = 1 then _Splash_P1_Dir = rand & 1
+   if _Splash_Blink = 1 then _Splash_P1_L_R = _P_Edge_Right - 10
+   if _Splash_Blink = 1 then _Splash_P1_U_D = 70
+
+   _Master_Counter = _Master_Counter + 1
+   if _Master_Counter < 4 then goto __Splash_Skip_Move
+   _Frame_Counter = _Frame_Counter + 1 : _Master_Counter = 0
+   if _Frame_Counter = 4 then _Frame_Counter = 0
+
+   _bird_counter = _bird_counter + 1
+   if _bird_counter = 60 then _bird_counter = 0
+
+   if _flight_pattern = 0 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 0 then if _Frame_Counter = 0 then _P1_U_D = _P1_U_D - 1
+
+   if _flight_pattern = 1 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 1 then if _bird_counter < 30 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D - 1
+   if _flight_pattern = 1 then if _bird_counter >= 30 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D + 1
+
+   if _flight_pattern = 2 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 2 then if _P1_U_D < 70 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D + 1
+   if _flight_pattern = 2 then if _P1_U_D > 40 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D - 1
+
+   if _flight_pattern = 3 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 3 then if rand & 1 then _P1_U_D = _P1_U_D + 1
+   if _flight_pattern = 3 then if !(rand & 1) then _P1_U_D = _P1_U_D - 1
+
+   if _Splash_P1_Dir then _Splash_P1_L_R = _Splash_P1_L_R + 1 else _Splash_P1_L_R = _Splash_P1_L_R - 1
+   if _Splash_P1_Pattern then if _Frame_Counter = 0 then _Splash_P1_U_D = _Splash_P1_U_D + 1
+
+
+__Splash_Skip_Move
+
+   if _P1_L_R > _P_Edge_Right then _bird_dir = 0 : _flight_pattern = rand & 3 : _bird_counter = 0
+   if _P1_L_R < _P_Edge_Left then _bird_dir = 1 : _flight_pattern = rand & 3 : _bird_counter = 0
+   if _Splash_P1_L_R > _P_Edge_Right then _Splash_P1_Dir = 0
+   if _Splash_P1_L_R < _P_Edge_Left then _Splash_P1_Dir = 1
+
+   player1x = _P1_L_R
+   player1y = _P1_U_D
+
+   player0x = _Splash_P1_L_R
+   player0y = _Splash_P1_U_D
 
 __Splash_Gfx
+   if _Splash_Blink & 8 then goto __Splash_Bird_Frame2
+
+__Splash_Bird_Frame1
+   player1:
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00111000
+ %01111100
+ %11111111
+ %00000110
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+end
    player0:
-   %00111000
-   %01101100
-   %11000110
-   %11000110
-   %11111110
-   %11000110
-   %11000110
-   %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00111000
+ %01111100
+ %11111111
+ %00000110
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+end
+   goto __Splash_Draw
+
+__Splash_Bird_Frame2
+   player1:
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00111000
+ %01111100
+ %11111111
+ %00111010
+ %00011000
+ %00011000
+ %00001000
+ %00000000
+ %00000000
+end
+   player0:
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00000000
+ %00111000
+ %01111100
+ %11111111
+ %00111010
+ %00011000
+ %00011000
+ %00001000
+ %00000000
+ %00000000
 end
 
-   player1:
-   %11000110
-   %11000110
-   %11000110
-   %11111110
-   %11000110
-   %11000110
-   %11000110
-   %00000000
-end
+__Splash_Draw
 
    drawscreen
 
@@ -1186,6 +1395,28 @@ __exit_flight_sub
 
  
 ;   _Bit0_Bird_Restrainer{0} = 1
+
+   pfpixel 4 _Ammo_Row off
+   pfpixel 6 _Ammo_Row off
+   pfpixel 8 _Ammo_Row off
+   pfpixel 10 _Ammo_Row off
+   pfpixel 12 _Ammo_Row off
+   pfpixel 14 _Ammo_Row off
+   pfpixel 16 _Ammo_Row off
+   pfpixel 18 _Ammo_Row off
+   pfpixel 20 _Ammo_Row off
+   pfpixel 22 _Ammo_Row off
+
+   if _Shots_Remaining > 0 then pfpixel 4 _Ammo_Row on
+   if _Shots_Remaining > 1 then pfpixel 6 _Ammo_Row on
+   if _Shots_Remaining > 2 then pfpixel 8 _Ammo_Row on
+   if _Shots_Remaining > 3 then pfpixel 10 _Ammo_Row on
+   if _Shots_Remaining > 4 then pfpixel 12 _Ammo_Row on
+   if _Shots_Remaining > 5 then pfpixel 14 _Ammo_Row on
+   if _Shots_Remaining > 6 then pfpixel 16 _Ammo_Row on
+   if _Shots_Remaining > 7 then pfpixel 18 _Ammo_Row on
+   if _Shots_Remaining > 8 then pfpixel 20 _Ammo_Row on
+   if _Shots_Remaining > 9 then pfpixel 22 _Ammo_Row on
 
    ;***************************************************************
    ;
@@ -1271,40 +1502,16 @@ end
 
 __Dog_Frame0
    player0height = 8
-   player1height = 32
+   player1height = 8
    player1:
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00100010
- %00100010
- %00100010
- %00101010
- %00011100
- %00001000
- %00010100
- %00011100
- %00001001
- %11111011
- %11111101
- %11111111
- %11111001
- %01110001
- %10010001
- %10010011
+ %11100000
+ %10000000
+ %11100000
  %10010000
+ %10110000
+ %11100000
  %10010000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
- %00000000
+ %11100000
 end
    player1color:
    $8C
@@ -1315,30 +1522,6 @@ end
    $8C
    $00
    $00
-   $00
-   $14
-   $14
-   $04
-   $14
-   $14
-   $22
-   $32
-   $12
-   $20
-   $20
-   $14
-   $14
-   $16
-   $14
-   $14
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
 end
    goto __exit_flight_sub
 
