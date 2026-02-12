@@ -208,7 +208,7 @@
 
    ;***************************************************************
    ;
-   ;  Disables the score. (We don`t need it in this program.)
+   ;  Disables the =. (We don`t need it in this program.)
    ;
   ;   const noscore = 1
     ;bird's default is NOT falling
