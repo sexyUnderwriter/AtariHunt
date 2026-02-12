@@ -42,6 +42,8 @@
    dim _Splash_P1_U_D = t
    dim _Splash_P1_Pattern = u
    dim _Splash_P1_Dir = v
+   dim _Grey_X_Prev = w
+   dim _Grey_Y_Prev = x
 
    ;```````````````````````````````````````````````````````````````
    ;  Makes better random numbers.
@@ -267,7 +269,7 @@ __Start_Restart
    ;
    a = 0 : b = 0 : c = 0 : d = 0 : e = 0 : f = 0 : g = 0 : h = 0 : i = 0
    j = 0 : k = 0 : l = 0 : m = 0 : n = 0 : o = 0 : p = 0 : q = 0 : r = 0
-   s = 0 : t = 0 : u = 0 : v = 0 : w = 0 : x = 0 : y = 0
+   s = 0 : t = 0 : u = 0 : v = 0
    var0 = 0 : var1 = 0 : var2 = 0 : var3 = 0 : var4 = 0
    var5 = 0 : var6 = 0 : var7 = 0 : var8 = 0
 
@@ -292,9 +294,10 @@ __Start_Restart
 
    ;***************************************************************
    ;
-   ;  Starting position of Player0.
+   ;  Starting position of Player0 and initialize grey code.
    ;
    player0x = 45 : player0y = 53
+   _Grey_X_Prev = 0 : _Grey_Y_Prev = 0
 
    ;***************************************************************
    ;
@@ -779,6 +782,53 @@ __Main_Loop
 
    if _Just_Started then goto __Just_Started_Check
 
+   ;***************************************************************
+   ;  Grey code trackball reading (quadrature encoding).
+   ;  Reads INPT0-3 for horizontal and vertical movement.
+   ;
+   
+   ; Read horizontal grey code bits (INPT0 bit 7, INPT1 bit 7)
+   temp1 = 0
+   if INPT0 >= 128 then temp1 = 2
+   if INPT1 >= 128 then temp1 = temp1 + 1
+   
+   ; Decode horizontal movement using state table
+   temp3 = _Grey_X_Prev * 4
+   temp3 = temp3 + temp1
+   if temp3 = 1 then _P0_L_R = _P0_L_R + 2
+   if temp3 = 7 then _P0_L_R = _P0_L_R + 2
+   if temp3 = 8 then _P0_L_R = _P0_L_R + 2
+   if temp3 = 14 then _P0_L_R = _P0_L_R + 2
+   if temp3 = 2 then _P0_L_R = _P0_L_R - 2
+   if temp3 = 4 then _P0_L_R = _P0_L_R - 2
+   if temp3 = 11 then _P0_L_R = _P0_L_R - 2
+   if temp3 = 13 then _P0_L_R = _P0_L_R - 2
+   _Grey_X_Prev = temp1
+   
+   ; Read vertical grey code bits (INPT2 bit 7, INPT3 bit 7)
+   temp2 = 0
+   if INPT2 >= 128 then temp2 = 2
+   if INPT3 >= 128 then temp2 = temp2 + 1
+   
+   ; Decode vertical movement using state table
+   temp4 = _Grey_Y_Prev * 4
+   temp4 = temp4 + temp2
+   if temp4 = 1 then _P0_U_D = _P0_U_D + 2
+   if temp4 = 7 then _P0_U_D = _P0_U_D + 2
+   if temp4 = 8 then _P0_U_D = _P0_U_D + 2
+   if temp4 = 14 then _P0_U_D = _P0_U_D + 2
+   if temp4 = 2 then _P0_U_D = _P0_U_D - 2
+   if temp4 = 4 then _P0_U_D = _P0_U_D - 2
+   if temp4 = 11 then _P0_U_D = _P0_U_D - 2
+   if temp4 = 13 then _P0_U_D = _P0_U_D - 2
+   _Grey_Y_Prev = temp2
+   
+   ; Boundary checks
+   if _P0_L_R < _P_Edge_Left then _P0_L_R = _P_Edge_Left
+   if _P0_L_R > _P_Edge_Right then _P0_L_R = _P_Edge_Right
+   if _P0_U_D < _P_Edge_Top then _P0_U_D = _P_Edge_Top
+   if _P0_U_D > _P_Edge_Bottom then _P0_U_D = _P_Edge_Bottom
+
 __Fire_Button_Check
 
    ;***************************************************************
@@ -844,53 +894,14 @@ __Just_Started_Check
 
    if joy0fire then _Bit1_FireB_Restrainer{1} = 1 : goto __Skip_Joy0_Fire
    _Just_Started = 0
+   _Grey_X_Prev = 0 : _Grey_Y_Prev = 0
    goto __Fire_Button_Check
 
 __After_Fire_Check
 
    ;***************************************************************
+   ;  Dog popup display after a hit.
    ;
-   ;  Joy0 up check.
-   ;
-   if !joy0up then goto __Skip_Joy0_Up
-   if _P0_U_D <= _P_Edge_Top then goto __Skip_Joy0_Up
-   _P0_U_D = _P0_U_D - 1.00
-   if _P0_U_D <= _P_Edge_Top then goto __Skip_Joy0_Up
-
-__Skip_Joy0_Up
-
-   ;***************************************************************
-   ;
-   ;  Joy0 down check.
-   ;
-   if !joy0down then goto __Skip_Joy0_Down
-   if _P0_U_D >= _P_Edge_Bottom then goto __Skip_Joy0_Down
-   _P0_U_D = _P0_U_D + 1.00
-   if _P0_U_D >= _P_Edge_Bottom then goto __Skip_Joy0_Down
-
-__Skip_Joy0_Down
-
-   ;***************************************************************
-   ;
-   ;  Joy0 left check.
-   ;
-   if !joy0left then goto __Skip_Joy0_Left
-   if _P0_L_R <= _P_Edge_Left then goto __Skip_Joy0_Left
-   _P0_L_R = _P0_L_R - 1.00
-   if _P0_L_R <= _P_Edge_Left then goto __Skip_Joy0_Left
-
-__Skip_Joy0_Left
-
-   ;***************************************************************
-   ;
-   ;  Joy0 right check.
-   ;
-   if !joy0right then goto __Skip_Joy0_Right
-   if _P0_L_R >= _P_Edge_Right then goto __Skip_Joy0_Right
-   _P0_L_R = _P0_L_R + 1.00
-   if _P0_L_R >= _P_Edge_Right then goto __Skip_Joy0_Right
-
-__Skip_Joy0_Right
 
    ;***************************************************************
    ;  Dog popup display after a hit.
