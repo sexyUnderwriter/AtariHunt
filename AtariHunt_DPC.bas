@@ -847,58 +847,26 @@ __Just_Started_Check
    goto __Fire_Button_Check
 
 __After_Fire_Check
-  
+
    ;***************************************************************
    ;
-   ;  Joy0 up check.   THIS DOES THE GUN MOVEMENT
-   ;
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if joystick isn't moved up.
+   ;  Joy0 up check.
    ;
    if !joy0up then goto __Skip_Joy0_Up
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if hitting the edge.
-   ;
    if _P0_U_D <= _P_Edge_Top then goto __Skip_Joy0_Up
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Moves player0 up.
-   ;
    _P0_U_D = _P0_U_D - 1.00
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if hitting the edge.
-   ;
    if _P0_U_D <= _P_Edge_Top then goto __Skip_Joy0_Up
 
- 
 __Skip_Joy0_Up
 
    ;***************************************************************
    ;
    ;  Joy0 down check.
    ;
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if joystick isn't moved down.
-   ;
    if !joy0down then goto __Skip_Joy0_Down
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if hitting the edge.
-   ;
    if _P0_U_D >= _P_Edge_Bottom then goto __Skip_Joy0_Down
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Moves player0 down.
-   ;
    _P0_U_D = _P0_U_D + 1.00
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if hitting the edge.
-   ;
    if _P0_U_D >= _P_Edge_Bottom then goto __Skip_Joy0_Down
-
 
 __Skip_Joy0_Down
 
@@ -906,57 +874,20 @@ __Skip_Joy0_Down
    ;
    ;  Joy0 left check.
    ;
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if joystick isn't moved to the left.
-   ;
    if !joy0left then goto __Skip_Joy0_Left
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if hitting the edge.
-   ;
    if _P0_L_R <= _P_Edge_Left then goto __Skip_Joy0_Left
-
-   ;```````````````````````````````````````````````````````````````
-   ;```````````````````````````````````````````````````````````````
-   ;  Moves player0 left.
-   ;
    _P0_L_R = _P0_L_R - 1.00
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if hitting the edge.
-   ;
    if _P0_L_R <= _P_Edge_Left then goto __Skip_Joy0_Left
 
-   ;```````````````````````````````````````````````````````````````
-   ;  Speeds up if fire button is pressed.
- 
 __Skip_Joy0_Left
 
    ;***************************************************************
    ;
    ;  Joy0 right check.
    ;
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if joystick isn't moved to the right.
-   ;
    if !joy0right then goto __Skip_Joy0_Right
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if hitting the edge.
-   ;
    if _P0_L_R >= _P_Edge_Right then goto __Skip_Joy0_Right
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Stops movement if a playfield pixel is in the way.
-   ;
-   ;```````````````````````````````````````````````````````````````
-   ;  Moves player0 right.
-   ;
    _P0_L_R = _P0_L_R + 1.00
-
-   ;```````````````````````````````````````````````````````````````
-   ;  Skips this section if hitting the edge.
-   ;
    if _P0_L_R >= _P_Edge_Right then goto __Skip_Joy0_Right
 
 __Skip_Joy0_Right
@@ -1016,7 +947,7 @@ __dead_bird
    _P0_U_D = _P_Edge_Bottom
    player0y = _P0_U_D
    _Round_Hits = _Round_Hits + 1
-   score = score + 1
+   score = score + 10
    goto __exit_flight_sub
 
 __dog_show
@@ -1109,7 +1040,6 @@ __clear_missile
 
 __Round_End_Check
 
-   score = _Round_Hits * 10
    AUDV0 = 0 : AUDV1 = 0
 
    drawscreen
@@ -1128,7 +1058,6 @@ __Next_Round
    _Shots_Remaining = _Shots_Per_Round
    _Shots_Fired = 0
    _Round_Hits = 0
-   score = 0
    goto __bird_spawn
 
 __Game_Over
