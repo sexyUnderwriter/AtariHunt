@@ -1109,17 +1109,7 @@ __clear_missile
 
 __Round_End_Check
 
-   score = 0
-   if _Round_Hits = 1 then score = 10
-   if _Round_Hits = 2 then score = 20
-   if _Round_Hits = 3 then score = 30
-   if _Round_Hits = 4 then score = 40
-   if _Round_Hits = 5 then score = 50
-   if _Round_Hits = 6 then score = 60
-   if _Round_Hits = 7 then score = 70
-   if _Round_Hits = 8 then score = 80
-   if _Round_Hits = 9 then score = 90
-   if _Round_Hits = 10 then score = 100
+   score = _Round_Hits * 10
    AUDV0 = 0 : AUDV1 = 0
 
    drawscreen
@@ -1183,14 +1173,7 @@ __Splash_Screen
    missile0x = 200 : missile0y = 200
 
    _Splash_Blink = _Splash_Blink + 1
-   if _Splash_Blink = 1 then _flight_pattern = rand & 3
-   if _Splash_Blink = 1 then _bird_dir = rand & 1
-   if _Splash_Blink = 1 then _P1_L_R = _P_Edge_Left + 10
-   if _Splash_Blink = 1 then _P1_U_D = 50
-   if _Splash_Blink = 1 then _Splash_P1_Pattern = rand & 1
-   if _Splash_Blink = 1 then _Splash_P1_Dir = rand & 1
-   if _Splash_Blink = 1 then _Splash_P1_L_R = _P_Edge_Right - 10
-   if _Splash_Blink = 1 then _Splash_P1_U_D = 70
+   if _Splash_Blink = 1 then _flight_pattern = rand & 3 : _bird_dir = rand & 1 : _P1_L_R = _P_Edge_Left + 10 : _P1_U_D = 50 : _Splash_P1_Pattern = rand & 1 : _Splash_P1_Dir = rand & 1 : _Splash_P1_L_R = _P_Edge_Right - 10 : _Splash_P1_U_D = 70
 
    _Master_Counter = _Master_Counter + 1
    if _Master_Counter < 4 then goto __Splash_Skip_Move
@@ -1200,23 +1183,16 @@ __Splash_Screen
    _bird_counter = _bird_counter + 1
    if _bird_counter = 60 then _bird_counter = 0
 
-   if _flight_pattern = 0 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
-   if _flight_pattern = 0 then if _Frame_Counter = 0 then _P1_U_D = _P1_U_D - 1
-
-   if _flight_pattern = 1 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
-   if _flight_pattern = 1 then if _bird_counter < 30 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D - 1
-   if _flight_pattern = 1 then if _bird_counter >= 30 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D + 1
-
-   if _flight_pattern = 2 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
-   if _flight_pattern = 2 then if _P1_U_D < 70 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D + 1
-   if _flight_pattern = 2 then if _P1_U_D > 40 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D - 1
-
-   if _flight_pattern = 3 then if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
-   if _flight_pattern = 3 then if rand & 1 then _P1_U_D = _P1_U_D + 1
-   if _flight_pattern = 3 then if !(rand & 1) then _P1_U_D = _P1_U_D - 1
+   if _bird_dir then _P1_L_R = _P1_L_R + 1 else _P1_L_R = _P1_L_R - 1
+   if _flight_pattern = 0 && _Frame_Counter = 0 then _P1_U_D = _P1_U_D - 1
+   if _flight_pattern = 1 && _bird_counter < 30 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D - 1
+   if _flight_pattern = 1 && _bird_counter >= 30 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D + 1
+   if _flight_pattern = 2 && _P1_U_D < 70 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D + 1
+   if _flight_pattern = 2 && _P1_U_D > 40 && (_Frame_Counter & 1) then _P1_U_D = _P1_U_D - 1
+   if _flight_pattern = 3 && (rand & 1) then _P1_U_D = _P1_U_D + 1 else if _flight_pattern = 3 then _P1_U_D = _P1_U_D - 1
 
    if _Splash_P1_Dir then _Splash_P1_L_R = _Splash_P1_L_R + 1 else _Splash_P1_L_R = _Splash_P1_L_R - 1
-   if _Splash_P1_Pattern then if _Frame_Counter = 0 then _Splash_P1_U_D = _Splash_P1_U_D + 1
+   if _Splash_P1_Pattern && _Frame_Counter = 0 then _Splash_P1_U_D = _Splash_P1_U_D + 1
 
 
 __Splash_Skip_Move
@@ -1504,24 +1480,60 @@ __Dog_Frame0
    player0height = 8
    player1height = 8
    player1:
- %11100000
- %10000000
- %11100000
- %10010000
- %10110000
- %11100000
- %10010000
- %11100000
+   %00111100 ; Top of head
+    %01111110
+    %11011011 ; Eyes
+    %11111111
+    %10000001 ; Snout top
+    %01111110 ; Nose area
+    %01000010 ; Open mouth top
+    %01011010 ; Tongue detail
+    %01011010
+    %00111100 ; Jaw
+    %00011000 ; Neck
+    %00111100 ; Collar
+    %01111110 ; Shoulders
+    %11111111 ; Chest
+    %11111111
+    %11111111
+    %11111111
+    %01111110
+    %01111110
+    %01100110 ; Legs start
+    %01100110
+    %01100110
+    %01100110
+    %01100110
+    %11100111 ; Paws
+    %11100111
 end
    player1color:
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
-   $8C
-   $00
-   $00
+   $34 ; Brown
+   $34
+   $0E ; White (Eyes)
+   $34
+   $32 ; Darker brown
+   $0E ; White (Snout)
+   $00 ; Black (Mouth)
+   $44 ; Red (Tongue)
+   $44
+   $0E ; White
+   $34 ; Brown
+   $84 ; Blue (Collar)
+   $34 ; Brown... (repeat for body)
+   $34
+   $34
+   $34
+   $34
+   $34
+   $34
+   $34
+   $34
+   $34
+   $34
+   $34
+   $0E ; White (Paws)
+   $0E
 end
    goto __exit_flight_sub
 
