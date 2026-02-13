@@ -3,6 +3,8 @@ bin/
 *.bin
 *.lst
 *.sym
+*.h
+*.asm
 
 # macOS
 .DS_Store
