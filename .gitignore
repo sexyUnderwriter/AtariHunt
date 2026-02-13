@@ -5,6 +5,6 @@ bin/
 *.sym
 *.h
 *.asm
-
+*.bB
 # macOS
 .DS_Store
