@@ -756,7 +756,7 @@ end
    ;
 __Main_Loop
 
-;   scorecolor = _F8
+
 
    ;***************************************************************
    ;
@@ -768,35 +768,26 @@ __Main_Loop
    ; Sets the width of missle
 
    NUSIZ0 = $20
-
-   ;***************************************************************
-   ;
-   ;  Splash screen.
-   ;
-   if _Splash_Active then goto __Splash_Screen
-
-   if _Game_Over then goto __Game_Over
-   ;I think this is where the trackball input and the main gameplay loop start. 
+;I think this is where the trackball input and the main gameplay loop start. 
    ;The game over check is here so that the player can see the final score and;
    ; accuracy after the game ends, instead of it immediately jumping to the ;
    ;game over screen where the score and accuracy are not visible.
-   
-   
-   
-   if _Shots_Remaining = 0 && !_Bit0_Bird_Dead{0} && !_Bit1_Bird_Falling{0} && !_Bit2_Dog_Show{2} then goto __Round_End_Check
-
-   if _Just_Started then goto __Just_Started_Check
 
    ;***************************************************************
    ;  Grey code trackball reading (quadrature encoding).
    ;  Reads INPT0-3 for horizontal and vertical movement.
    ;
-   
+   ;
+
    ; Read horizontal grey code bits (INPT0 bit 7, INPT1 bit 7)
    temp1 = 0
+
+   ;Debug if trackball is working by changing background color based on horizontal movement.
+   
+   ;if temp1 > 0 then COLUBK = $46 else COLUBK = $8C
    if INPT0 >= 128 then temp1 = 2
    if INPT1 >= 128 then temp1 = temp1 + 1
-   
+
    ; Decode horizontal movement using state table
    temp3 = _Grey_X_Prev * 4
    temp3 = temp3 + temp1
@@ -809,12 +800,12 @@ __Main_Loop
    if temp3 = 11 then _P0_L_R = _P0_L_R - 2
    if temp3 = 13 then _P0_L_R = _P0_L_R - 2
    _Grey_X_Prev = temp1
-   
+
    ; Read vertical grey code bits (INPT2 bit 7, INPT3 bit 7)
    temp2 = 0
    if INPT2 >= 128 then temp2 = 2
    if INPT3 >= 128 then temp2 = temp2 + 1
-   
+
    ; Decode vertical movement using state table
    temp4 = _Grey_Y_Prev * 4
    temp4 = temp4 + temp2
@@ -827,12 +818,28 @@ __Main_Loop
    if temp4 = 11 then _P0_U_D = _P0_U_D - 2
    if temp4 = 13 then _P0_U_D = _P0_U_D - 2
    _Grey_Y_Prev = temp2
-   
+
    ; Boundary checks
    if _P0_L_R < _P_Edge_Left then _P0_L_R = _P_Edge_Left
    if _P0_L_R > _P_Edge_Right then _P0_L_R = _P_Edge_Right
    if _P0_U_D < _P_Edge_Top then _P0_U_D = _P_Edge_Top
    if _P0_U_D > _P_Edge_Bottom then _P0_U_D = _P_Edge_Bottom
+
+   ;***************************************************************
+   ;
+   ;  Splash screen.
+   ;
+   if _Splash_Active then goto __Splash_Screen
+
+   if _Game_Over then goto __Game_Over
+   
+   
+   
+   if _Shots_Remaining = 0 && !_Bit0_Bird_Dead{0} && !_Bit1_Bird_Falling{0} && !_Bit2_Dog_Show{2} then goto __Round_End_Check
+
+   if _Just_Started then goto __Just_Started_Check
+
+   
 
 __Fire_Button_Check
 
@@ -857,6 +864,9 @@ __Fire_Button_Check
    ;  bird restrainer.
    ;
    _Bit1_FireB_Restrainer{1} = 1
+
+
+
 
    if _Shots_Remaining = 0 then goto __Skip_Joy0_Fire
    _Shots_Remaining = _Shots_Remaining - 1
