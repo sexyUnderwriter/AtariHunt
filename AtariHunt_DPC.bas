@@ -784,7 +784,7 @@ __Main_Loop
 
    ;Debug if trackball is working by changing background color based on horizontal movement.
    
-   ;if temp1 > 0 then COLUBK = $46 else COLUBK = $8C
+  ; if INPT0 > 0 then COLUBK = $46 else COLUBK = $8C
    if INPT0 >= 128 then temp1 = 2
    if INPT1 >= 128 then temp1 = temp1 + 1
 
@@ -799,7 +799,9 @@ __Main_Loop
    if temp3 = 4 then _P0_L_R = _P0_L_R - 2
    if temp3 = 11 then _P0_L_R = _P0_L_R - 2
    if temp3 = 13 then _P0_L_R = _P0_L_R - 2
+
    _Grey_X_Prev = temp1
+   player0x = _P0_L_R ; Update the actual hardware register
 
    ; Read vertical grey code bits (INPT2 bit 7, INPT3 bit 7)
    temp2 = 0
@@ -818,7 +820,8 @@ __Main_Loop
    if temp4 = 11 then _P0_U_D = _P0_U_D - 2
    if temp4 = 13 then _P0_U_D = _P0_U_D - 2
    _Grey_Y_Prev = temp2
-
+   player0y = _P0_U_D ; Update the actual hardware register
+   
    ; Boundary checks
    if _P0_L_R < _P_Edge_Left then _P0_L_R = _P_Edge_Left
    if _P0_L_R > _P_Edge_Right then _P0_L_R = _P_Edge_Right
