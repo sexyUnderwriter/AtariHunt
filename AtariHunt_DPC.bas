@@ -75,6 +75,7 @@
    ;  game and want to instantly convert the colors to NTSC (if you
    ;  were already using the PAL-60 constants).
    ;
+   
    const _00 = $00
    const _02 = $02
    const _04 = $04
@@ -348,7 +349,7 @@ end
 
    ;***************************************************************
    ;
-   ;  Defines shape of player1 sprite. (bird)
+   ;  Defines shape of player1 sprite. (bird) used in splash screen only it seems.
    ;
  player1:
  %00000000
@@ -745,9 +746,6 @@ end
 end
  
 
-
-; const scorefade = 1
-
    scorecolor = _F8
 
      ;***************************************************************
@@ -758,7 +756,7 @@ end
    ;
 __Main_Loop
 
-   scorecolor = _F8
+;   scorecolor = _F8
 
    ;***************************************************************
    ;
@@ -778,6 +776,13 @@ __Main_Loop
    if _Splash_Active then goto __Splash_Screen
 
    if _Game_Over then goto __Game_Over
+   ;I think this is where the trackball input and the main gameplay loop start. 
+   ;The game over check is here so that the player can see the final score and;
+   ; accuracy after the game ends, instead of it immediately jumping to the ;
+   ;game over screen where the score and accuracy are not visible.
+   
+   
+   
    if _Shots_Remaining = 0 && !_Bit0_Bird_Dead{0} && !_Bit1_Bird_Falling{0} && !_Bit2_Dog_Show{2} then goto __Round_End_Check
 
    if _Just_Started then goto __Just_Started_Check
@@ -1098,8 +1103,11 @@ __Game_Over
 
 __Splash_Screen
 
-   scorecolor = _F8
-   score = 0
+   scorecolor = _8E ; this doesn't actually set the score color for the splash screen, but it does prevent a bug where the score flashes white when you start the game from the splash screen. So I consider it worth leaving in even though it doesn't do anything for the splash screen itself.
+   score = 8008 ; this does change the splash screen text to "BOOB" ;
+   ;which is amusing and also prevents a bug where the score flashes "0000";
+   ; on the splash screen. So I consider it worth leaving in even though ;
+   ;it doesn't do anything for the splash screen itself.
 
    ; Blue background, white logo and indicator.
    COLUBK = $8C
