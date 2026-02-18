@@ -218,13 +218,6 @@
    const _Min_Hits_To_Pass = 7
    const _Ammo_Row = 170
 
-
-
-   ;***************************************************************
-   ;
-   ;  Disables the =. (We don`t need it in this program.)
-   ;
-  ;   const noscore = 1
     ;bird's default is NOT falling
     _Bit1_Bird_Falling{1} = 0 ;bird's default is NOT falling
     
